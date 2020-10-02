@@ -1,99 +1,82 @@
+#Tulsipada Das
+#Dr. android Guruji
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
-from configparser import ConfigParser
+import time, winsound
+from configparser import RawConfigParser
+from colorama import Fore, init, deinit
 
-CONFIG = ConfigParser()
+opts = Options()
+opts.add_argument("user-agent=Mozilla/5.0 (Linux; Android 7.0; SM-G930VC Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/58.0.3029.83 Mobile Safari/537.36")
+
+
+
+
+init()
+CONFIG = RawConfigParser()
 CONFIG.read('config.ini')
-
-driver_path = CONFIG.get('MAIN', 'DRIVER_LOCATION') 
+driver_path = CONFIG.get('MAIN', 'DRIVER_LOCATION')
 email_inp = CONFIG.get('CREDENTIALS', 'USERNAME')
 pass_inp = CONFIG.get('CREDENTIALS', 'PASSWORD')
-cvv_inp = CONFIG.get('ORDER', 'CVV') 
+order_link = CONFIG.get('ORDER', 'LINK')
+cvv_inp = CONFIG.get('ORDER', 'CVV')
 addr_input = CONFIG.get('ORDER', 'ADDRESS')
 pay_opt_input = CONFIG.get('ORDER', 'PAYMENT')
-pay_opt_upi_type = CONFIG.get('ORDER', 'UPITYPE')
-
 bankname_input = CONFIG.get('EMIOPTIONS', 'BANK')
 tenure_input = CONFIG.get('EMIOPTIONS', 'TENURE')
+frequency = 2500
+duration = 2000
 
-url= CONFIG.get('ORDER', 'URL')
+def prCyan(skk):
+    print(Fore.CYAN + skk)
 
-print('\nLogging in with username:',email_inp)
 
-driver = webdriver.Chrome(driver_path)
-driver.maximize_window()
+def prRed(skk):
+    print(Fore.RED + skk)
+
+
+def prGreen(skk):
+    print(Fore.GREEN + skk)
+
+
+def prYellow(skk):
+    print(Fore.YELLOW + skk)
+
+
+url = order_link
+prRed('Opening Link in chrome..........')
+prCyan('\n')
+print('\nLogging in with username:', email_inp)
+prYellow('\n')
+if pay_opt_input == 'EMI_OPTIONS':
+    print('\nEMI Option Selected. \nBANK:', bankname_input, '\nTENURE:', tenure_input, '\n')
+else:
+    if pay_opt_input == 'PHONEPE':
+        print('\nPayment with Phonepe\n')
+    else:
+        if pay_opt_input == 'NET_OPTIONS':
+            print('\nNet Banking Payment Selected\n')
+        else:
+            if pay_opt_input == 'COD':
+                prGreen('COD selected\n')
+            else:
+                print('\nFull Payment Selected\n')
+
+driver = webdriver.Chrome(options=opts , executable_path=driver_path)
+
+driver.set_window_size(550,750)
 driver.get(url)
+prCyan('\n')
 
-input('\nConfirm Details & Press Enter to proceed!')
 
-def login():
-    try:
-        print("Logging In..")
-        try:
-            login = WebDriverWait(driver, 20).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, "._34niwY"))
-            )
-            print('Login Button Clickable')
-        except:
-            print('Login Button Not Clickable')
-        login.click()
-        print('Login Button Clicked Successfully')
-    except:
-        print('login Failed. Retrying.')
-        time.sleep(0.5)	
-        login()
-        
 def login_submit():
-    try:
-        if 'Enter Password' in driver.page_source:
-            print('Trying Usual method of Login.')
-            email = driver.find_element_by_css_selector(".Km0IJL ._2zrpKA")
-            passd = driver.find_element_by_css_selector(".Km0IJL ._3v41xv")
-            email.clear()
-            passd.clear()
-            email.send_keys(email_inp)
-            passd.send_keys(pass_inp)
-            try:
-                form = WebDriverWait(driver, 20).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, ".Km0IJL ._7UHT_c"))
-                )
-                print('Submit Button Clickable')
-            except:
-                print('Submit Button Not Clickable')
-            form.click()     
-        else:
-            print('Trying Alternate method of Login.')
-            email = driver.find_element_by_css_selector("._2zrpKA")
-            email.clear()
-            email.send_keys(email_inp)
-            loginnext = WebDriverWait(driver, 5).until(
-                            EC.element_to_be_clickable((By.CSS_SELECTOR, "._1LctnI"))
-                        )
-            loginnext.click()
-            loginpassword = WebDriverWait(driver, 5).until(
-                            EC.element_to_be_clickable((By.CSS_SELECTOR, ".jUwFiZ"))
-                        )
-            loginpassword.click()
-            time.sleep(0.5)
-            passd = driver.find_elements_by_css_selector("._2zrpKA")[1]
-            passd.clear()
-            passd.send_keys(pass_inp)
-            form = WebDriverWait(driver, 20).until(
-                            EC.element_to_be_clickable((By.CSS_SELECTOR, "._1LctnI"))
-                        )
-            form.click()
-        print("Logged In Successfully")
-        time.sleep(0.5)
-    except:
-        if ('Login &amp; Signup' not in driver.page_source and 'Login & Signup' not in driver.page_source):
-            print('Logged in Manually.')
-        else:
-            print('login_submit Failed. Please login manually.')
-            time.sleep(1)
-            login_submit()
+    print("login your account ")
+    input('Confirm login & Press Enter to proceed.')
+
 
 def buy_check():
     try:
@@ -101,230 +84,148 @@ def buy_check():
         while nobuyoption:
             try:
                 driver.refresh()
-                time.sleep(0.2)
-                buyprod = driver.find_element_by_css_selector("._1k1QCg ._7UHT_c")
-                print('Buy Button Clickable: ' + time.ctime())
+                time.sleep(0.50)
+                buyprod = driver.find_element_by_xpath("//*[@id='container']/div/div[1]/div/div/div/div/div[1]/div/div/div/div[2]/div/div/div[2]/div/div/div[2]/div/div/div/div/div")
+                prYellow('Buy Button Clickable')
                 nobuyoption = False
             except:
                 nobuyoption = True
-                print('Buy Button Not Clickable: ' + time.ctime())
+                prRed('Buy Button Not Clickable')
+
         buyprod.click()
-        print('Buy Button Clicked Successfully: ' +  time.ctime())
+        prYellow('Buy Button Clicked Successfully')
         buy_recheck()
     except:
-        print('buy_check Failed. Retrying: ' + time.ctime())
-        time.sleep(0.5)	
+        prRed('buy_check Failed. Retrying.')
+        time.sleep(0.5)
         buy_check()
-        
-def buy_recheck():        
+
+
+def buy_recheck():
     try:
-        WebDriverWait(driver, 4).until(
-            EC.title_contains("Secure Payment")
-        )        
-        print('Redirected to Payment')
+        WebDriverWait(driver, 4).until(EC.title_contains('Flipkart'))
+        prYellow('Redirected to Payment')
     except:
-        print('Error in Redirecting to Payment')
-        time.sleep(0.5)	
-        buy_check()
-        
+        prRed('Error in Redirecting to Payment')
+        time.sleep(0.5)
+        buy_recheck()
+
+
 def deliver_option():
     try:
-        addr_input_final = "//label[@for='"+addr_input+"']"
+        addr_input_final = "//label[@for='" + addr_input + "']"
         try:
-            sel_addr = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.XPATH,addr_input_final))
-            )
-            print('Address Selection Button Clickable')
+            sel_addr = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, addr_input_final)))
+            prYellow('Address Selection Button Clickable')
         except:
-            print('Address Selection Button Not Clickable')    
-        sel_addr.click()
-        print('Address Selection Button Clicked Successfully')
+            prRed('Address Selection Button Not Clickable')
+        else:
+            sel_addr.click()
+            prYellow('Address Selection Button Clicked Successfully')
     except:
-        print('deliver_option Failed. Retrying.')
-    
+        prRed('deliver_option Failed. Retrying.')
+
+
 def deliver_continue():
     try:
         addr_sal_avl = True
         while addr_sal_avl:
             try:
-                address_sel = WebDriverWait(driver, 5).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, "._3K1hJZ ._7UHT_c"))
-                )
+                address_sel = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, '._3K1hJZ ._7UHT_c')))
                 address_sel.click()
                 addr_sal_avl = False
                 print('Address Delivery Button Clickable')
             except:
                 addr_sal_avl = True
+                winsound.Beep(frequency, duration)
                 print('Address Delivery Button Not Clickable')
+
         print('Address Delivery Button Clicked Successfully')
     except:
         print('deliver_continue Failed. Retrying.')
-        
-def order_summary_continue():
-    try:
-        press_continue =  driver.find_element_by_css_selector("._2Q4i61")             
-        press_continue.click()
-        print('Continue Button Clicked Successfully')
-    except:
-        print('order_summary_continue Failed. Retrying.')
-        time.sleep(0.5)	
-        order_summary_continue()
-        
-def choose_payment():
-    try: 
-        pay_opt_input_final = "//label[@for='"+pay_opt_input+"']"
-        pay_method_sel = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, pay_opt_input_final)) )
-        pay_method_sel.click()
-        time.sleep(0.2)
-        if pay_opt_input == 'UPI':
-            pay_opt_upi_type_final = "//label[@for='"+pay_opt_upi_type+"']"
-            pay_opt_upi_type_sel = WebDriverWait(driver, 5).until(
-                    EC.element_to_be_clickable((By.XPATH, pay_opt_upi_type_final)) )
-            pay_opt_upi_type_sel.click()
-        print("payment method select click")
-        if pay_opt_input == 'EMI_OPTIONS':
-            emi_button = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, ".B7BM8s"))
-            )
-            emi_button.click()
-            time.sleep(0.5)
-            card_name = WebDriverWait(driver, 5).until(
-                    EC.element_to_be_clickable((By.XPATH, '//div[contains(text(), "'+bankname_input+'")]')) )
-            card_name.click()
-            time.sleep(0.5)
-            emi_tenure = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, "//label[@for='"+tenure_input+"']")) )
-            emi_tenure.click()
-            time.sleep(0.5)
-            continue_emi = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "._7UHT_c"))
-            )
-            continue_emi.click()
-        print('Payment Method Selected Successfully')
-    except:
-        print('choose_payment Failed. Retrying.')
-        time.sleep(0.5)	
-        choose_payment()
-        
-def payment_emi():
-    try:
-        emi_path = "//label[@for='EMI_PAYMENT']"
-        emi_button = WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.XPATH, emi_path))
-        )
-        emi_button.click()
-        print('EMI option selected')
-    except:
-        print('payment_emi Failed. Retrying.')
-        time.sleep(0.5)	
-        payment_emi()
-    payment_cvv()
 
-def payment_emi_term_select():
-    try:          
-        press_continue =  None
-        try:
-            press_continue = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "._2o59RR ._7UHT_c"))
-            )
-            print('EMI 3 month term button clickable')   
-        except:
-            print('EMI 3 month term button not clicked')       
-        press_continue.click()
-        print('EMI 3 month term button clicked')
-    except:
-        print('payment_emi_term_select Failed. Retrying.')
-        time.sleep(0.5)	
-        payment_emi_term_select()
-    payment_emi_final()
 
-def payment_emi_final():
-    try:          
-        press_continue =  None
-        try:
-            press_continue = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "._3hgEev ._7UHT_c"))
-            )
-            print('EMI button clickable')   
-        except:
-            print('EMI button not clicked')       
-        press_continue.click()
-        print('EMI button clicked')
-    except:
-        print('payment_emi_final Failed. Retrying.')
-        time.sleep(0.5)	
-        payment_emi_final()
 
-def payment_cvv():
+def skip():
+    time.sleep(8)
+    driver.find_element_by_xpath("//*[@class='_1C3neO _2h9Zp6 _1y96ch']").click()
     try:
-        payment_sel =  None
-        payment_sel = WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "._16qL6K"))
-        )
+        x = driver.find_element_by_xpath("//*[@src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMS4wNTQgMWwxMC41NDMgMTAuNjVtLjA1NC0xMC41OTZMMSAxMS41OTciIHN0cm9rZT0iIzQxNDE0MSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgZmlsbD0ibm9uZSIvPjwvc3ZnPgo=']")
+        x.click()
+        print("skip click")
+    except:
+        print("skip not click")
+    order_summary_continue()
+
+
+def order_summary_continue(): 
+    time.sleep(7)
+    driver.find_element_by_xpath("//*[@id='stickyFooter']/div/div[2]/div/div/span").click()
+    time.sleep(5)
+    driver.find_element_by_xpath("//*[@id='fk-cp-pay']/div/div[1]/div[1]/a/img").click()
+
+
+    
+    
+
+
+def cod_captcha():
+    try:
+        payment_sel = None
+        payment_sel = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, '._16qL6K')))
         payment_sel.clear()
-        payment_sel.send_keys(cvv_inp)
-        print('CVV Entered:'+cvv_inp)
+        prYellow('Type the captcha here:')
+        capText = input()
+        payment_sel.send_keys(capText)
+        prGreen('\nCaptcha entered successfully.')
+        prYellow('\nClicking Confirm Button order:')
+        confirm_btn = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, '._7UHT_c')))
+        confirm_btn.click()
+        prGreen('\nOrder confirmed successfully')
     except:
-        print('payment_cvv Failed. Retrying.')
-        time.sleep(0.5)	
-        payment_cvv()
-    payment_continue()
-        
+        prRed('\nCaptcha could not be entered. Plese type manually on webpage.')
+
+
+
+
+
+
 def payment_continue():
     try:
-        pay =  None
+        pay = None
         try:
-            pay = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "._3K1hJZ ._7UHT_c"))
-            )
-            print('Pay Button Clickable')   
+            pay = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, '._3K1hJZ ._7UHT_c')))
+            print('Pay Button Clickable')
         except:
-            print('Pay Button Not Clickable')        
-        pay.click()
-        print('Pay Button Clicked Successfully')
+            print('Pay Button Not Clickable')
+        else:
+            pay.click()
+            print('Pay Button Clicked Successfully')
     except:
         print('payment_continue Failed. Retrying.')
-        time.sleep(0.5)	
-        payment_continue()
-        
+
+
 def otp_submit():
     try:
-        otp = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "._3K1hJZ .l5dwor"))
-            )
+        otp = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, '._3K1hJZ .l5dwor')))
         otp.clear()
         print('Please enter OTP here:')
-        otp_input = input()    
+        otp_input = input()
         otp.send_keys(otp_input)
-                    
-        submit_otp = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "._3K1hJZ ._7UHT_c"))
-            )
+        submit_otp = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, '._3K1hJZ ._7UHT_c')))
         submit_otp.click()
         print('OTP Submitted Successfully')
     except:
         print('otp_submit Failed. Retrying.')
+        time.sleep(0.5)
+        otp_submit()
 
-def run_script():
-    pay_mode = input('\n Choose payment mode: \n1. PhonePe \t2. Saved Card \t3. EMI: ')
-    login()
+
+def try_till_otp():
     login_submit()
     buy_check()
-    order_summary_continue()
-    start = time.time()
-    print("Start time: {0}".format(start))
-    if pay_mode=='1':
-        choose_payment()
-        payment_continue()
-    elif pay_mode=='2':
-        payment_cvv()
-    elif pay_mode=='3':
-        payment_emi()
-        payment_emi_term_select()
-    end = time.time()
-    total = end - start
-    print("Total time taken: {0}".format(total))
+    skip()
 
-if __name__ == "__main__":
-   run_script()
+
+if __name__ == '__main__':
+    try_till_otp()
