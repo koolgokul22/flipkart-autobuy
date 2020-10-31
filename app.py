@@ -148,8 +148,8 @@ def deliver_continue():
 
 def skip():
     time.sleep(8)
-    driver.find_element_by_xpath("//*[@class='_1C3neO _2h9Zp6 _1y96ch']").click()
     try:
+        driver.find_element_by_xpath("//*[@class='_1C3neO _2h9Zp6 _1y96ch']").click()
         x = driver.find_element_by_xpath("//*[@src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMS4wNTQgMWwxMC41NDMgMTAuNjVtLjA1NC0xMC41OTZMMSAxMS41OTciIHN0cm9rZT0iIzQxNDE0MSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgZmlsbD0ibm9uZSIvPjwvc3ZnPgo=']")
         x.click()
         print("skip click")
